@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -27,12 +28,14 @@ public class Main {
 
 	static XSSFRow row;
 
+	@SuppressWarnings("unused")
 	public static void main(String[] args) {
 		try {
-//			final String readPath = args[0];
-//			final String writePath = args[1];
+			final String readPath = args[0];
+			final String writePath = args[1];
 			
-			final String readPath = "C:\\Users\\emylyn.audemard\\Downloads\\test\\output";
+//			final String readPath = "C:\\Users\\emylyn.audemard\\Downloads\\test\\output";
+//			final String writePath = "C:\\Users\\emylyn.audemard\\Downloads\\test";
 			
 			DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
 			List<List<Object>> lists = new ArrayList<List<Object>>();
@@ -80,6 +83,7 @@ public class Main {
 					
 					Iterator<Cell> cellIterator = row.cellIterator();
 					List<Object> list = new ArrayList<Object>(); 
+					Map<Integer, Object> map=new HashMap<Integer, Object>();  
 					
 					while (cellIterator.hasNext()) {
 						Cell cell = cellIterator.next();
@@ -88,10 +92,13 @@ public class Main {
 							switch (cell.getCellType()) {
 								case STRING:
 									list.add(cell.getStringCellValue());
+									map.put(1, cell.getStringCellValue());
 									break;
 								case BLANK:
+									list.add("aaa");
 									break;
 								default:
+									list.add("def");
 									break;
 							}
 						}
@@ -100,10 +107,13 @@ public class Main {
 							switch (cell.getCellType()) {
 								case STRING:
 									list.add(cell.getStringCellValue());
+									map.put(2, cell.getStringCellValue());
 									break;
 								case BLANK:
+									list.add("aaa");
 									break;
 								default:
+									list.add("def");
 									break;
 							}
 						}
@@ -112,10 +122,13 @@ public class Main {
 							switch (cell.getCellType()) {
 								case STRING:
 									list.add(cell.getStringCellValue());
+									map.put(3, cell.getStringCellValue());
 									break;
 								case BLANK:
+									list.add("aaa");
 									break;
 								default:
+									list.add("def");
 									break;
 							}
 						}
@@ -124,10 +137,13 @@ public class Main {
 							switch (cell.getCellType()) {
 								case STRING:
 									list.add(cell.getStringCellValue());
+									map.put(4, cell.getStringCellValue());
 									break;
 								case BLANK:
+									list.add("aaa");
 									break;
 								default:
+									list.add("def");
 									break;
 							}
 						}
@@ -136,10 +152,13 @@ public class Main {
 							switch (cell.getCellType()) {
 								case STRING:
 									list.add(cell.getStringCellValue());
+									map.put(5, cell.getStringCellValue());
 									break;
 								case BLANK:
+									list.add("aaa");
 									break;
 								default:
+									list.add("def");
 									break;
 							}
 						}
@@ -148,10 +167,13 @@ public class Main {
 							switch (cell.getCellType()) {
 								case STRING:
 									list.add(cell.getStringCellValue());
+									map.put(6, cell.getStringCellValue());
 									break;
 								case BLANK:
+									list.add("aaa");
 									break;
 								default:
+									list.add("def");
 									break;
 							}
 						}
@@ -160,22 +182,32 @@ public class Main {
 							switch (cell.getCellType()) {
 								case STRING:
 									list.add(cell.getStringCellValue());
+									map.put(7, cell.getStringCellValue());
 									break;
 								case BLANK:
+									list.add("aaa");
 									break;
 								default:
+									list.add("def");
 									break;
 							}
 						}
 						
 						if(cell.getColumnIndex()==53) { //completion time
 							switch (cell.getCellType()) {
+								case STRING:
+									list.add(cell.getStringCellValue());
+									map.put(8, cell.getStringCellValue());
+									break;
 								case NUMERIC:
 									list.add(df.format(cell.getDateCellValue()));
+									map.put(8, cell.getDateCellValue());
 									break;
 								case BLANK:
+									list.add("aaa");
 									break;
 								default:
+									list.add("def");
 									break;
 							}
 						}
@@ -184,10 +216,13 @@ public class Main {
 							switch (cell.getCellType()) {
 								case STRING:
 									list.add(cell.getStringCellValue());
+									map.put(9, cell.getStringCellValue());
 									break;
 								case BLANK:
+									list.add("aaa");
 									break;
 								default:
+									list.add("def");
 									break;
 							}
 						}
@@ -201,15 +236,62 @@ public class Main {
 //				    } 
 				}
 				
-				
+				lists.removeIf(e -> e.contains("Category"));//Filter: remove headers contains category keyword
+				lists.removeIf(e -> e.contains("Category*"));//Filter: remove headers contains category keyword
 				fis.close();
 			    workbook.close();
 			    
 			    System.out.println("DONE "+record);
 				record=0;
+				
+				
 			}
 			System.out.println();
 		    System.out.println("Total Lists:"+lists.size());
+		    
+		    Map < String, List<Object> > reportinfo = new TreeMap < String, List<Object> >();
+		    
+		    int item = 1;
+		    for (List<Object> list : lists) {  
+		    	if(!list.isEmpty()) {
+		    		reportinfo.put(String.valueOf(item), list);
+		    		item++;
+		    	}
+		    } 
+		    
+		    XSSFWorkbook workbook_out = new XSSFWorkbook(); 
+		    XSSFSheet spreadsheet_out = workbook_out.createSheet(" Consolidated Result ");
+		    
+		  //Iterate over data and write to sheet
+		      Set < String > keyid = reportinfo.keySet();
+		      int rowid = 0;
+		      
+		      for (String key : keyid) {
+			         row = spreadsheet_out.createRow(rowid++);
+			         List<Object> objectArr = reportinfo.get(key);
+			         int cellid = 0;
+
+			         for (Object obj : objectArr) {
+			            Cell cell = row.createCell(cellid++);
+			            
+			            if(obj.toString().isEmpty()){
+			            	cell.setCellValue("--");
+			            }else if(obj.toString().trim() == "aaa"){
+			            	cell.setCellValue("--");
+			            }else {
+			            	cell.setCellValue(obj.toString());
+			            }
+			            
+			         }
+			      }
+		      
+			    //Write the workbook in file system
+		      FileOutputStream out = new FileOutputStream(new File(writePath+"\\"+masterFilename+".xlsx"));
+//		      FileOutputStream out = new FileOutputStream(new File(writePath+"\\"+masterFilename+"_"+LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss"))+".xlsx"));
+		      workbook_out.write(out);
+		      out.close();
+		      workbook_out.close();
+		      System.out.println("written successfully");
 			
 	    }
 	    catch (ArrayIndexOutOfBoundsException | IOException e){
