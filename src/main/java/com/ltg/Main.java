@@ -229,6 +229,7 @@ public class Main {
 						
 					}
 					
+					list.add(0, LTGCompany);
 					lists.add(list);
 					record++;
 //					for (List<Object> mylist : lists) {  
@@ -261,6 +262,7 @@ public class Main {
 		    
 		    XSSFWorkbook workbook_out = new XSSFWorkbook(); 
 		    XSSFSheet spreadsheet_out = workbook_out.createSheet(" Consolidated Result ");
+		    File masterOut = new File(writePath+"\\"+masterFilename+".xlsx");
 		    
 		  //Iterate over data and write to sheet
 		      Set < String > keyid = reportinfo.keySet();
@@ -286,12 +288,13 @@ public class Main {
 			      }
 		      
 			    //Write the workbook in file system
-		      FileOutputStream out = new FileOutputStream(new File(writePath+"\\"+masterFilename+".xlsx"));
+		      FileOutputStream out = new FileOutputStream(masterOut);
 //		      FileOutputStream out = new FileOutputStream(new File(writePath+"\\"+masterFilename+"_"+LocalDateTime.now().format(DateTimeFormatter.ofPattern("ddMMyyyy_HHmmss"))+".xlsx"));
 		      workbook_out.write(out);
 		      out.close();
 		      workbook_out.close();
 		      System.out.println("written successfully");
+		      System.out.println(masterOut.toString());
 			
 	    }
 	    catch (ArrayIndexOutOfBoundsException | IOException e){
